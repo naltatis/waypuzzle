@@ -17,22 +17,33 @@ describe Field, "#full_places" do
   end
     
   it "return 0 if no piece is added" do
-    @field.full_places.should == 0
+    @field.full_places.size.should == 0
   end
 
   it "return 1 if one piece is added" do
     @field.set(1,1,Piece.new("_w,rw,sr,sr"))
-    @field.full_places.should == 1
+    @field.full_places.size.should == 1
   end
   
   it "return 1 if two pieces are set to the same position" do
     @field.set(1,1,Piece.new("_w,rw,sr,sr"))
     @field.set(1,1,Piece.new("_w,rw,sr,sr"))
-    @field.full_places.should == 1
+    @field.full_places.size.should == 1
   end
   
   it "return 0 if a piece is placed out of bound" do
     @field.set(1,6,Piece.new("_w,rw,sr,sr"))
-    @field.full_places.should == 0        
+    @field.full_places.size.should == 0        
+  end
+end
+
+describe Field, "#free_places" do
+  before(:each) do
+    @field = Field.new(2,2)
+  end
+  
+  it "return all places if no piece is set" do
+    @field.free_places.size.should == 4
+    @field.free_places.should == [[1,1],[1,2],[2,1],[2,2]]
   end
 end

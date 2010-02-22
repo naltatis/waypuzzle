@@ -3,8 +3,8 @@ class Field
     @places = Hash.new
     width.times do |x|
       height.times do |y|
-        @places[[x,y]] = nil
-      end
+        @places[[x+1,y+1]] = nil
+      end 
     end
   end
   
@@ -13,9 +13,13 @@ class Field
   end
   
   def full_places 
-    counter = 0
-    @places.each { |k,v| counter += 1 if v }
-    counter
+    full = @places.clone.delete_if { |k,v| v.nil? }
+    full.keys.sort
+  end
+  
+  def free_places
+    free = @places.clone.delete_if { |k,v| !v.nil? }
+    free.keys.sort
   end
 
   def set x, y, piece

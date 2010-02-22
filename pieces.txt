@@ -1,0 +1,16 @@
+_w,rw,sr,sr
+w_,ws,wf,sw
+fw,wr,sf,sr
+rs,sw,wf,fr
+ww,fr,wf,rw
+fw,ws,sw,wr
+rw,wr,r_,r_
+fr,_s,rs,ww
+ws,_r,ws,rf
+s_,wf,s_,wf
+rw,sr,rf,ws
+fw,ws,s_,fr
+_s,fw,fs,fw
+fr,rs,fw,sw
+fs,sw,rf,rw
+ws,rf,wr,rs

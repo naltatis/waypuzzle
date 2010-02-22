@@ -26,6 +26,11 @@ class Field
     @places[[x,y]] = piece if @places.key? [x,y]
   end
   
+  def fits? x, y, piece
+    true
+  end
+  
+  
   def to_s
     @places
   end

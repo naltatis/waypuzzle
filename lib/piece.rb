@@ -1,6 +1,7 @@
 class Piece
-  def initialize line
+  def initialize line, direction = :north
     @sides = line.split(",")
+    @direction = direction
   end
   
   def to_s

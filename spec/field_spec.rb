@@ -61,12 +61,76 @@ describe Field, "#free_places" do
   end
 end
 
+describe Field, "#possible_places" do
+  before(:each) do
+    @field = Field.new(3,3)
+  end
+  
+  it "return all places if nothing is set" do
+    @field.possible_places.size.should == 9
+  end
+  
+  it "return all places next the set ones" do
+    @field.set 1,1,Piece.new("__,__,__,__")
+    @field.possible_places.size.should == 2
+    
+    @field.set 1,2,Piece.new("__,__,__,__")
+    @field.possible_places.size.should == 3
+
+    @field.set 1,3,Piece.new("__,__,__,__")
+    @field.possible_places.size.should == 3
+  end
+end
+
 describe Field, "#fits?" do
   before(:each) do
-    @field = Field.new(2,2)
+    @field = Field.new(3,3)
   end
   
   it "return true if it is the first one" do
     @field.fits?(1,1,Piece.new("__,rw,__,__")).should == true
+  end
+  
+  it "return false if the second piece does not touch the first one" do
+    @field.set(1,1,Piece.new("__,rw,__,__"))
+    @field.fits?(3,3,Piece.new("__,__,__,wr")).should == false    
+  end
+
+  it "return false if it is placed outside" do
+    @field.fits?(4,1,Piece.new("__,rw,__,__")).should == false
+  end
+
+  it "return true if sides fit" do
+    @field.set(2,2,Piece.new("s_,rw,fw,ff"))
+    @field.fits?(2,1,Piece.new("__,__,_s,__")).should == true
+    @field.fits?(3,2,Piece.new("__,__,__,wr")).should == true
+    @field.fits?(2,3,Piece.new("wf,__,__,__")).should == true
+    @field.fits?(1,2,Piece.new("__,ff,__,__")).should == true
+  end
+
+  it "return false if sides don't fit" do
+    @field.set(2,2,Piece.new("s_,rw,fw,ff"))
+    @field.fits?(2,1,Piece.new("__,__,__,__")).should == false
+    @field.fits?(3,2,Piece.new("__,__,__,__")).should == false
+    @field.fits?(2,3,Piece.new("__,__,__,__")).should == false
+    @field.fits?(1,2,Piece.new("__,__,__,__")).should == false
+  end
+  
+end
+
+describe Field, "#to_s" do
+  before(:each) do
+    @field = Field.new(3,3)
+  end
+  
+  it "return ascii representation" do
+    # first pieces
+    @field.set(1,1,Piece.new("__,__,__,__"))
+    @field.set(1,2,Piece.new("__,__,__,__"))
+
+    # will be rejected
+    @field.set(3,1,Piece.new("__,__,__,ww"))
+    
+    @field.to_s.should == "x--\nx--\n---\n"
   end
 end

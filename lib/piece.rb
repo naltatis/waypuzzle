@@ -1,10 +1,15 @@
 class Piece
   attr_writer :direction
 
+  @@directions = [:north,:east,:south,:west]
   
   def initialize line, direction = :north
     @sides = line.split(",")
     @direction = direction
+  end
+  
+  def self.directions
+      @@directions
   end
   
   def top
@@ -46,6 +51,6 @@ class Piece
   private
   
   def offset
-    - [:north,:east,:south,:west].index(@direction)
+    - @@directions.index(@direction)
   end
 end

@@ -9,7 +9,7 @@ end
 file.close
 
 def random_strategy
-  number_of_tries = @field.total_places * 5
+  number_of_tries = 1000
   @pieces.each do |piece|
     places = @field.possible_places
 
@@ -49,21 +49,24 @@ def total_strategy
   end
 end
 
-def print_result
-  puts "#{@field.full_places.size}/#{@field.total_places} places"
-  puts @field 
+def print_result field
+  puts "#{field.full_places.size}/#{@pieces.size} places"
+  puts field 
   puts
 end
 
-@field = Field.new(8,8)
+@field = Field.new
 random_strategy
-print_result
+print_result @field
 
-64.times do
-  @field = Field.new(12,12)
+best = nil
+1000.times do
+  @field = Field.new
   total_strategy
-  print_result  
+  best = @field if best.nil? || @field.full_places.size > best.full_places.size
 end
+print_result best
+
 
 class Array
   def shuffle

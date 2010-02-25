@@ -20,8 +20,20 @@ class Field
     (possible - full_places).uniq
   end
   
+  def connections
+    c = 0
+    b = borders
+    (b[:min_y]..b[:max_y]).each do |y|
+      (b[:min_x]..b[:max_x]).each do |x|
+        c += 1 if !@card[[x,y]].nil? && !@card[[x-1,y]].nil?
+        c += 1 if !@card[[x,y]].nil? && !@card[[x,y-1]].nil?
+      end
+    end
+    c
+  end
+  
   def set x, y, piece
-    @card[[x,y]] = piece if fits? x, y, piece
+    @card[[x,y]] = piece if fits?(x, y, piece)
   end
   
   def fits? x, y, piece
@@ -29,16 +41,55 @@ class Field
     right = @card[[x+1,y]]
     bottom = @card[[x,y+1]]
     left = @card[[x-1,y]]
-
-    (@card.empty? || has_neighbours(x,y)) &&
-      (!top || top.fits_bottom?(piece)) &&
-      (!right || right.fits_left?(piece)) &&
-      (!bottom || bottom.fits_top?(piece)) &&
-      (!left || left.fits_right?(piece))
+    
+    (possible_places.include? [x,y]) &&
+      (top.nil? || piece.fits_top?(top)) &&
+      (right.nil? || piece.fits_right?(right)) &&
+      (bottom.nil? || piece.fits_bottom?(bottom)) &&
+      (left.nil? || piece.fits_left?(left))
   end
   
   def to_s
     out = ""
+    b = borders
+    (b[:min_y]..b[:max_y]).each do |y|
+      (b[:min_x]..b[:max_x]).each do |x|
+        out += @card[[x,y]].nil? ? "-" : "x"
+      end      
+      out += "\n"
+    end
+    out
+  end
+  
+  def to_ascii
+    rows = []
+    i = 0
+    
+    b = borders
+    (b[:min_y]..b[:max_y]).each do |y|
+      5.times { |j| rows[i+j] = "" }
+        (b[:min_x]..b[:max_x]).each do |x|
+        c = @card[[x,y]]
+        if !c.nil?
+          rows[i+0] += "|-#{c.top[0,1]}-#{c.top[1,2]}-| "
+          rows[i+1] += "|#{c.left[1,2]}   #{c.right[0,1]}| "
+          rows[i+2] += "|#{c.left[0,1]}   #{c.right[1,2]}| "
+          rows[i+3] += "|-#{c.bottom[1,2]}-#{c.bottom[0,1]}-| "
+        else
+          rows[i+0] += "|-----| "
+          rows[i+1] += "|     | "
+          rows[i+2] += "|     | "
+          rows[i+3] += "|-----| "
+        end
+      end
+      i += 5
+    end
+    rows.join "\n"
+  end
+  
+  private
+  
+  def borders
     max_x = 0
     max_y = 0
     min_x = 0
@@ -51,18 +102,8 @@ class Field
       min_x = x if x < min_x
       min_y = y if y < min_y
     end
-    
-    (min_x..max_x).each do |x|
-      (min_y..max_y).each do |y|
-        out += @card[[x,y]].nil? ? "-" : "x"
-      end      
-      out += "\n"
-    end
-
-    out
+    {:min_x => min_x, :max_x => max_x, :min_y => min_y, :max_y => max_y}
   end
-  
-  private
   
   def neighbour_fields x, y
     [[x,y-1],[x+1,y],[x,y+1],[x-1,y]]

@@ -1,34 +1,34 @@
 require 'lib/field'
 require 'lib/piece'
 
-@pieces = []
+pieces = []
 file = File.new("pieces.txt", "r")
 while (line = file.gets)
-  @pieces.push(Piece.new(line))
+  pieces.push(Piece.new(line.strip))
 end
 file.close
 
 def random_strategy
   number_of_tries = 1000
-  @pieces.each do |piece|
-    places = @field.possible_places
+  pieces.each do |piece|
+    places = field.possible_places
 
     number_of_tries.times do |i|
       piece.direction = Piece.directions[rand(4)]
     
       x,y = places[rand(places.size)]
 
-      if @field.fits?(x, y, piece)
-        @field.set x, y, piece
+      if field.fits?(x, y, piece)
+        field.set x, y, piece
         break
       end
     end
   end
 end
 
-def total_strategy
-  @pieces.shuffle.each do |piece|
-    places = @field.possible_places
+def total_strategy field, pieces
+  pieces.shuffle.each do |piece|
+    places = field.possible_places
     
     places.shuffle.each do |place|      
       success = false
@@ -37,8 +37,8 @@ def total_strategy
         piece.direction = direction
         x,y = place
         
-        if @field.fits?(x, y, piece)
-          @field.set x, y, piece
+        if field.fits?(x, y, piece)
+          field.set x, y, piece
           success = true
         end
         
@@ -50,22 +50,28 @@ def total_strategy
 end
 
 def print_result field
-  puts "#{field.full_places.size}/#{@pieces.size} places"
-  puts field 
+  puts "#{field.full_places.size}/16 cards | #{field.connections} connection"
+  puts field.to_s
+  puts field.to_ascii
   puts
 end
 
-@field = Field.new
-random_strategy
-print_result @field
+#field = Field.new
+#random_strategy
+#print_result field
 
-best = nil
-1000.times do
-  @field = Field.new
-  total_strategy
-  best = @field if best.nil? || @field.full_places.size > best.full_places.size
+best = 0
+fields = []
+100000.times do |i|
+  fields[i] = Field.new
+  total_strategy fields[i], pieces
+  if best.nil? || fields[i].connections >= fields[best].connections
+    best = i 
+    puts "\##{best} #{fields[best].connections} connections"
+    print_result fields[i]
+  end
 end
-print_result best
+print_result fields[best]
 
 
 class Array

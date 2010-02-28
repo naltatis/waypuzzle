@@ -1,5 +1,5 @@
-path {fill:none; stroke-width:25px;}
-.street {stroke:#aaa}
-.rail {stroke:#ff6200}
-.foot {stroke:#ffc700}
-.water {stroke:#2818B1}
+path {fill:none; stroke-width:0.3}
+.way_s {stroke:#aaa}
+.way_r {stroke:#ff6200}
+.way_f {stroke:#ffc700}
+.way_w {stroke:#2818B1}

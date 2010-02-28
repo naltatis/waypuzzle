@@ -50,7 +50,7 @@ def total_strategy field, pieces
 end
 
 def print_result field
-  puts "#{field.full_places.size}/16 cards | #{field.connections} connection"
+  puts "#{field.full_places.size} cards | #{field.connections} connection"
   puts field.to_s
   puts field.to_ascii
   puts
@@ -62,7 +62,7 @@ end
 
 best = 0
 fields = []
-100000.times do |i|
+5000.times do |i|
   fields[i] = Field.new
   total_strategy fields[i], pieces
   if best.nil? || fields[i].connections >= fields[best].connections

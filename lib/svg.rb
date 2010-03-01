@@ -4,16 +4,22 @@ class Svg
     
     result = Array.new
     ["f","r","w","s"].each do |type|
-      p = points.clone.delete_if {|k,v| v != type}
+      p = points.select {|v| v[:type] == type}
       case p.size
         when 0
           #puts "no #{type}"
         when 1
-          #puts "one #{type}"
-        when 
-          result.push(connect(p.keys,type))
+          result.push(ending(p[0][:coord], type))
+        when 2
+          result.push(connect(p[0][:coord], p[1][:coord], type))
+        when 3
+          result.push(connect(p[0][:coord], p[1][:coord], type))
+          result.push(connect(p[1][:coord], p[2][:coord], type))
+        when 4
+          result.push(connect(p[0][:coord], p[1][:coord], type))
+          result.push(connect(p[2][:coord], p[3][:coord], type))
         else
-          #puts "more than 2 #{type}"
+          puts "#{p.size} types found"
       end
     end
     result
@@ -35,50 +41,76 @@ class Svg
   
   private
   
-  def connect coords, type
-    p1,p2 = coords
+  def ending p1, type
+    x1,y1 = p1
+    if x1 == 0
+      ref_x = 1
+    elsif x1 == 3
+      ref_x = 2
+    elsif y1 == 0
+      ref_y = 1
+    else
+      ref_y = 2
+    end
+    
+    ref_x = ref_x || x1
+    ref_y = ref_y || y1
+    "<path d=\"M #{x1},#{y1} L #{ref_x},#{ref_y}\" class=\"way_#{type}\" />"
+  end
+  
+  def connect p1, p2, type
     x1,y1 = p1
     x2,y2 = p2
-
-    if ((x1-x2).abs == 1 && y1 == y2) || ((y1-y2).abs == 1 && x1 == x2)
-      "<path d=\"M #{x2},#{y2} Q 1.5,1.5 #{x1},#{y1}\" class=\"way_#{type}\" />"
-    elsif (x1-x2).abs == 1 && (y1-y2).abs == 1
+    
+    # small corner
+    if (x1-x2).abs == 1 && (y1-y2).abs == 1
       ref_x = (x1 > 1.5) ? 2 : 1
       ref_y = (y1 > 1.5) ? 2 : 1
-      "<path d=\"M #{x2},#{y2} Q #{ref_x},#{ref_y} #{x1},#{y1}\" class=\"way_#{type}\" />"
+      path = "M #{x1},#{y1} Q #{ref_x},#{ref_y} #{x2},#{y2}"
+    # large corner
+    elsif (x1-x2).abs == 2 && (y1-y2).abs == 2
+      ref_x,ref_y = (p1 == [3,1]) ? [x2,y1] : [x1,y2]
+      path = "M #{x1},#{y1} Q #{ref_x},#{ref_y} #{x2},#{y2}"
+    # turn vertical
+    elsif (x1==x2 && (y1-y2).abs == 1)
+      ref_x = (x1 == 0) ? 1 : 2
+      path = "M #{x1},#{y1} C #{ref_x},#{y1} #{ref_x},#{y2} #{x2},#{y2}"
+    # turn horizontal
+    elsif (y1==y2 && (x1-x2).abs == 1)
+      ref_y = (y1 == 0) ? 1 : 2
+      path = "M #{x1},#{y1} C #{x1},#{ref_y} #{x2},#{ref_y} #{x2},#{y2}"
+    # straight horizontal
     elsif x1 == x2 || y1 == y2
-      "<path d=\"M #{x2},#{y2} L #{x1},#{y1}\" class=\"way_#{type}\" />"
-    elsif (x1-x2).abs == 1 && (y1-y2).abs == 2 && (x1 == 0 || x1 == 3 || x2 == 0 || x2 == 3)
-      sx,ex = (x1 > x2) ? [x1,x2] : [x2,x1]
-      sy,ey = (y1 > y2) ? [y1,y2] : [y2,y1]
-      ref_y1 = sy-1.5;
-      ref_y2 = ey+1.5;
-      "<path d=\"M #{x1},#{y1} C #{sx},#{ref_y1} #{ex},#{ref_y2} #{x2},#{y2}\" class=\"way_#{type}\" />"
+      path = "M #{x1},#{y1} L #{x2},#{y2}"
+    # diagonal
     elsif (x1-x2).abs == 1 && (y1-y2).abs == 3 && x1 > 0 && x1 < 3
-      sx,ex = (x1 > x2) ? [x1,x2] : [x2,x1]
-      sy,ey = (y1 > y2) ? [y1,y2] : [y2,y1]
-      ref_y1 = sy-1.5;
-      ref_y2 = ey+1.5;
-      "<path d=\"M #{sx},#{sy} C #{sx},#{ref_y1} #{ex},#{ref_y2} #{ex},#{ey}\" class=\"way_#{type}\" />"
+      path = "M #{x1},#{y1} C #{x1},1.5 #{x2},1.5 #{x2},#{y2}"
+    # diagonal
     elsif (y1-y2).abs == 1 && (x1-x2).abs == 3 && y1 > 0 && y1 < 3
-      sx,ex = (x1 > x2) ? [x1,x2] : [x2,x1]
-      sy,ey = (y1 > y2) ? [y1,y2] : [y2,y1]
-      ref_x1 = sx-1.5;
-      ref_x2 = ex+1.5;
-      "<path d=\"M #{sx},#{sy} C #{ref_x1},#{sy} #{ref_x2},#{ey} #{ex},#{ey}\" class=\"way_#{type}\" />"
+      path = "M #{x1},#{y1} C 1.5,#{y1} 1.5,#{y2} #{x2},#{y2}"
+    # long corner
+    else
+      ref_x1 = (x1 > 1.5) ? 2 : 1
+      ref_y1 = (y1 > 1.5) ? 2 : 1
+      ref_x2 = (x2 > 1.5) ? 2 : 1
+      ref_y2 = (y2 > 1.5) ? 2 : 1
+      if [[1,0],[3,1],[2,3],[0,2]].include?(p1)
+        path = "M #{x1},#{y1} Q #{ref_x1},#{ref_y1} #{ref_x2},#{ref_y2} L #{x2},#{y2}"
+      else
+        path = "M #{x1},#{y1} L #{ref_x1},#{ref_y1} Q #{ref_x2},#{ref_y2} #{x2},#{y2}"
+      end
     end
+    "<path d=\"#{path}\" class=\"way_#{type}\" />"    
   end
   
   def point_hash p
-    {
-      [1,0] => p.top[0,1],
-      [2,0] => p.top[1,2],
-      [3,1] => p.right[0,1],
-      [3,2] => p.right[1,2],
-      [2,3] => p.bottom[0,1],
-      [1,3] => p.bottom[1,2],
-      [0,2] => p.left[0,1],
-      [0,1] => p.left[1,2]
-    }
+    [ { :coord => [1,0], :type => p.top[0,1] },
+      { :coord => [2,0], :type => p.top[1,2] },
+      { :coord => [3,1], :type => p.right[0,1] },
+      { :coord => [3,2], :type => p.right[1,2] },
+      { :coord => [2,3], :type => p.bottom[0,1] },
+      { :coord => [1,3], :type => p.bottom[1,2] },
+      { :coord => [0,2], :type => p.left[0,1] },
+      { :coord => [0,1], :type => p.left[1,2] } ]
   end
 end

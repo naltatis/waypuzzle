@@ -2,6 +2,6 @@
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 3 3">
     	<title>piece</title>
     	<g><rect x="0" y="0" width="3" height="3" fill="none" stroke="black" stroke-width="0.01" rx="0.07" /><path d="M 3,2 C 1.5,2 1.5,1 0,1" class="way_f" />
-<path d="M 3,2 C 1.5,2 1.5,1 0,1" class="way_w" />
-<path d="M 2,3 C 2,1.5 1,1.5 1,0" class="way_s" />	</g>
+<path d="M 3,1 C 1.5,1 1.5,2 0,2" class="way_w" />
+<path d="M 1,0 C 1,1.5 2,1.5 2,3" class="way_s" />	</g>
     </svg>

@@ -15,7 +15,7 @@ class Html
       t += "<tr>"
       line.each do |p|
         t += "<td>"
-        t += p.nil? ? "&nbsp;" : "<embed src=\"svg/#{p}.svg\" width=\"100\" height=\"100\">"
+        t += p.nil? ? "&nbsp;" : "<embed src=\"svg/#{p}.svg\" width=\"70\" height=\"70\">"
         t += "</td>"
       end      
       t += "</tr>"

@@ -1,5 +1,6 @@
 require 'lib/field'
 require 'lib/piece'
+require 'lib/html'
 
 pieces = []
 file = File.new("pieces.txt", "r")
@@ -52,8 +53,10 @@ end
 def print_result field
   puts "#{field.full_places.size} cards | #{field.connections} connection"
   puts field.to_s
-  puts field.to_ascii
   puts
+
+  h = Html.new
+  h.to_html field, "result.html"
 end
 
 #field = Field.new
@@ -71,7 +74,6 @@ fields = []
     print_result fields[i]
   end
 end
-print_result fields[best]
 
 
 class Array

@@ -45,7 +45,7 @@ class Piece
   end
   
   def to_s
-    @sides.join(",")
+    [top,right,bottom,left].join(",")
   end
   
   private

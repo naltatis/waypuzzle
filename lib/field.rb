@@ -51,38 +51,48 @@ class Field
   
   def to_s
     out = ""
-    b = borders
-    (b[:min_y]..b[:max_y]).each do |y|
-      (b[:min_x]..b[:max_x]).each do |x|
-        out += @card[[x,y]].nil? ? "-" : "x"
+    to_a.each do |line|
+      line.each do |p|
+        out += p.nil? ? "-" : "x"
       end      
       out += "\n"
     end
     out
   end
   
-  def to_ascii
-    rows = []
-    i = 0
-    
+  def to_a
+    out = []
     b = borders
     (b[:min_y]..b[:max_y]).each do |y|
-      5.times { |j| rows[i+j] = "" }
-        (b[:min_x]..b[:max_x]).each do |x|
-        c = @card[[x,y]]
+      line = []
+      (b[:min_x]..b[:max_x]).each do |x|
+        line.push @card[[x,y]]
+      end      
+      out.push line
+    end
+    out
+  end
+  
+  def to_ascii
+    rows = []
+
+    grid = to_a
+    grid.each_index do |i|
+      o = i*5
+      5.times { |j| rows[o+j] = "" }
+      grid[i].each do |c|
         if !c.nil?
-          rows[i+0] += "|-#{c.top[0,1]}-#{c.top[1,2]}-| "
-          rows[i+1] += "|#{c.left[1,2]}   #{c.right[0,1]}| "
-          rows[i+2] += "|#{c.left[0,1]}   #{c.right[1,2]}| "
-          rows[i+3] += "|-#{c.bottom[1,2]}-#{c.bottom[0,1]}-| "
+          rows[o+0] += "|-#{c.top[0,1]}-#{c.top[1,2]}-| "
+          rows[o+1] += "|#{c.left[1,2]}   #{c.right[0,1]}| "
+          rows[o+2] += "|#{c.left[0,1]}   #{c.right[1,2]}| "
+          rows[o+3] += "|-#{c.bottom[1,2]}-#{c.bottom[0,1]}-| "
         else
-          rows[i+0] += "|-----| "
-          rows[i+1] += "|     | "
-          rows[i+2] += "|     | "
-          rows[i+3] += "|-----| "
+          rows[o+0] += "|-----| "
+          rows[o+1] += "|     | "
+          rows[o+2] += "|     | "
+          rows[o+3] += "|-----| "
         end
       end
-      i += 5
     end
     rows.join "\n"
   end

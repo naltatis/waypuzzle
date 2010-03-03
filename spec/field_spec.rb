@@ -133,6 +133,24 @@ describe Field, "#to_s" do
   end
 end
 
+describe Field, "#to_a" do
+  before(:each) do
+    @field = Field.new
+  end
+  
+  it "return array representation" do
+    # first pieces
+    p1 = Piece.new("__,__,sr,__")
+    p2 = Piece.new("rs,fw,sr,ff")
+    p3 = Piece.new("__,__,__,__")
+    @field.set(0,0, p1)
+    @field.set(0,1, p2)
+    @field.set(1,0, p3)
+    
+    @field.to_a.should == [[p1,p3],[p2,nil]]
+  end
+end
+
 describe Field, "#to_ascii" do
   before(:each) do
     @field = Field.new

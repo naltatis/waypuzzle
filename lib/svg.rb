@@ -13,8 +13,9 @@ class Svg
         when 2
           result.push(connect(p[0][:coord], p[1][:coord], type))
         when 3
-          result.push(connect(p[0][:coord], p[1][:coord], type))
-          result.push(connect(p[1][:coord], p[2][:coord], type))
+          result.push(middle(p[0][:coord], type))
+          result.push(middle(p[1][:coord], type))
+          result.push(middle(p[2][:coord], type))
         when 4
           result.push(connect(p[0][:coord], p[1][:coord], type))
           result.push(connect(p[2][:coord], p[3][:coord], type))
@@ -44,6 +45,29 @@ class Svg
   def ending p1, type
     x1,y1 = p1
     if x1 == 0
+      ref_x1 = 0.5
+      ref_x2 = 1
+    elsif x1 == 3
+      ref_x1 = 2.5
+      ref_x2 = 2
+    elsif y1 == 0
+      ref_y1 = 0.5
+      ref_y2 = 1
+    else
+      ref_y1 = 2.5
+      ref_y2 = 2
+    end
+    
+    ref_x1 = ref_x1 || x1
+    ref_y1 = ref_y1 || y1
+    ref_x2 = ref_x2 || 1.5
+    ref_y2 = ref_y2 || 1.5
+    "<path d=\"M #{x1},#{y1} Q #{ref_x1},#{ref_y1} #{ref_x2},#{ref_y2}\" class=\"way_#{type}\" />"
+  end
+  
+  def middle p1, type
+    x1,y1 = p1
+    if x1 == 0
       ref_x = 1
     elsif x1 == 3
       ref_x = 2
@@ -55,7 +79,7 @@ class Svg
     
     ref_x = ref_x || x1
     ref_y = ref_y || y1
-    "<path d=\"M #{x1},#{y1} L #{ref_x},#{ref_y}\" class=\"way_#{type}\" />"
+    "<path d=\"M #{x1},#{y1} Q #{ref_x},#{ref_y} 1.5,1.5\" class=\"way_#{type}\" />"
   end
   
   def connect p1, p2, type
@@ -94,7 +118,12 @@ class Svg
       ref_y1 = (y1 > 1.5) ? 2 : 1
       ref_x2 = (x2 > 1.5) ? 2 : 1
       ref_y2 = (y2 > 1.5) ? 2 : 1
-      if [[1,0],[3,1],[2,3],[0,2]].include?(p1)
+      if [
+          [[1,0],[3,1]],
+          [[2,0],[0,1]],
+          [[3,1],[2,3]],
+          [[2,3],[0,2]]
+        ].include?([p1,p2])
         path = "M #{x1},#{y1} Q #{ref_x1},#{ref_y1} #{ref_x2},#{ref_y2} L #{x2},#{y2}"
       else
         path = "M #{x1},#{y1} L #{ref_x1},#{ref_y1} Q #{ref_x2},#{ref_y2} #{x2},#{y2}"

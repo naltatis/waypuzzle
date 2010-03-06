@@ -133,6 +133,31 @@ describe Field, "#to_s" do
   end
 end
 
+describe Field, "#removable_places" do
+  before(:each) do
+    @field = Field.new
+  end
+  
+  it "return edge places" do
+    p1 = Piece.new("__,__,__,__")
+    @field.set(0,0, p1)
+    @field.set(0,1, p1)
+    @field.set(1,0, p1)
+    
+    @field.removable_places.should == [[0,1],[1,0]]
+  end
+  
+  it "return edge places" do
+    p1 = Piece.new("__,__,__,__")
+    @field.set(0,0, p1)
+    @field.set(0,1, p1)
+    @field.set(1,0, p1)
+    @field.set(1,1, p1)
+    
+    @field.removable_places.should == [[0,0],[0,1],[1,0],[1,1]]
+  end
+end
+
 describe Field, "#to_a" do
   before(:each) do
     @field = Field.new

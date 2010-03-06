@@ -1,5 +1,5 @@
 class Field
-  attr_reader :width, :height
+  attr_writer :card
   
   def initialize
     @card = Hash.new
@@ -14,10 +14,22 @@ class Field
     
     possible = []
     full_places.each do |p|
-      possible += neighbour_fields p[0], p[1]
+      possible += neighbour_coords p[0], p[1]
     end
     
     (possible - full_places).uniq
+  end
+  
+  def removable_places
+    removable = []
+    full_places.each do |p|
+      if neighbour_fields(p[0], p[1]).size == 1 ||
+          max_surrounding_streak(p[0], p[1]) >= 3
+        removable.push p
+      end
+    end
+    
+    removable.uniq
   end
   
   def connections
@@ -34,6 +46,14 @@ class Field
   
   def set x, y, piece
     @card[[x,y]] = piece if fits?(x, y, piece)
+  end
+  
+  def remove x, y
+    @card.delete([x,y])
+  end
+  
+  def get x, y
+    @card[[x,y]]
   end
   
   def fits? x, y, piece
@@ -115,15 +135,37 @@ class Field
     {:min_x => min_x, :max_x => max_x, :min_y => min_y, :max_y => max_y}
   end
   
-  def neighbour_fields x, y
+  def neighbour_coords x, y
     [[x,y-1],[x+1,y],[x,y+1],[x-1,y]]
   end
   
-  def has_neighbours x, y
-    val = false
-    neighbour_fields(x,y).each do |field|
-      val = true if @card.key? field
+  def neighbour_fields x,y
+    n = []
+    neighbour_coords(x,y).each do |field|
+      n.push @card[field] if @card.key? field
     end
-    val
+    n
+  end
+
+  def surrounding_coords x, y
+    [[x,y-1],[x+1,y-1],[x+1,y],[x+1,y+1],[x,y+1],[x-1,y+1],[x-1,y],[x-1,y-1]]
+  end
+
+  def max_surrounding_streak x,y
+    current = 0
+    max = 0
+    (surrounding_coords(x,y)*2).each do |coord|
+      if @card.key? coord
+        current += 1
+        max = current if current > max
+      else
+        current = 0
+      end
+    end
+    max
+  end
+
+  def has_neighbours x, y
+    neighbour_fields(x,y).size > 0
   end
 end

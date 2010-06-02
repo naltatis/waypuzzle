@@ -147,7 +147,7 @@ describe Field, "#removable_places" do
     @field.removable_places.should == [[0,1],[1,0]]
   end
   
-  it "return edge places" do
+  it "return places that have more than two surrounding places" do
     p1 = Piece.new("__,__,__,__")
     @field.set(0,0, p1)
     @field.set(0,1, p1)
@@ -155,6 +155,19 @@ describe Field, "#removable_places" do
     @field.set(1,1, p1)
     
     @field.removable_places.should == [[0,0],[0,1],[1,0],[1,1]]
+  end
+  
+  it "return places that have more than two surrounding places" do
+    p1 = Piece.new("__,__,__,__")
+    @field.set(0,0, p1)
+    @field.set(0,1, p1)
+    @field.set(0,2, p1)
+    @field.set(1,1, p1)
+    @field.set(2,1, p1)
+    @field.set(2,0, p1)
+    @field.set(2,2, p1)
+    
+    @field.removable_places.should == [[0,0],[0,2],[2,0],[2,2]]
   end
 end
 

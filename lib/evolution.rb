@@ -19,6 +19,8 @@ class Evolution
       puts best(parents)
       h = Html.new
       h.to_html best(parents), "result.html"
+      h = Json.new
+      h.to_json best(parents), "result.json"
       puts
     end
     best(parents)
@@ -38,8 +40,9 @@ class Evolution
     p = []
     field = nil
     num.times do
-      until field && field.full_places.size == 16
+      until field && field.full_places.size == @pieces.size
         field = @creation.generate(@pieces.deep_clone)
+        puts field.full_places.size
       end
       p.push field
       field = nil

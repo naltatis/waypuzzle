@@ -23,10 +23,7 @@ class Field
   def removable_places
     removable = []
     full_places.each do |p|
-      if neighbour_fields(p[0], p[1]).size == 1 ||
-          max_surrounding_streak(p[0], p[1]) >= 3
-        removable.push p
-      end
+      removable.push p if removable? p[0], p[1]
     end
     
     removable.uniq
@@ -49,7 +46,9 @@ class Field
   end
   
   def remove x, y
+    field = @card[[x,y]]
     @card.delete([x,y])
+    field
   end
   
   def get x, y
@@ -119,6 +118,28 @@ class Field
   
   private
   
+  def removable? x, y
+    if @card.size == 1
+      return false
+    end
+    
+    field = remove x, y
+    start_x,start_y = full_neighbour_coords(x, y)[0]
+    
+    part_list = full_neighbour_coords(start_x, start_y)
+    10.times do |i|
+      part_list.clone.each do |coord|
+        full_neighbour_coords(coord[0], coord[1]).each do |n|
+          part_list.push n unless part_list.include? n
+        end
+      end
+    end
+    
+    set x, y, field
+
+    neighbour_fields(x, y).size == 1 || full_places.size == (part_list.size+1)
+  end
+  
   def borders
     max_x = 0
     max_y = 0
@@ -126,16 +147,19 @@ class Field
     min_y = 0
 
     @card.each do |key,card|
-      x,y = key
-      max_x = x if x > max_x
-      max_y = y if y > max_y
-      min_x = x if x < min_x
-      min_y = y if y < min_y
+      unless card.nil?
+        x,y = key
+        max_x = x if x > max_x
+        max_y = y if y > max_y
+        min_x = x if x < min_x
+        min_y = y if y < min_y
+      end
     end
     {:min_x => min_x, :max_x => max_x, :min_y => min_y, :max_y => max_y}
   end
   
   def neighbour_coords x, y
+    puts "#{x}-#{y}" if x.nil? || y.nil?
     [[x,y-1],[x+1,y],[x,y+1],[x-1,y]]
   end
   
@@ -145,6 +169,14 @@ class Field
       n.push @card[field] if @card.key? field
     end
     n
+  end
+  
+  def full_neighbour_coords x,y
+    n = []
+    neighbour_coords(x,y).each do |field|
+      n.push field if @card.key? field
+    end
+    n    
   end
 
   def surrounding_coords x, y

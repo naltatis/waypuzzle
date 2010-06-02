@@ -1,5 +1,6 @@
 class Piece
   attr_writer :direction
+  attr_reader :direction, :sides
 
   @@directions = [:north,:east,:south,:west]
   

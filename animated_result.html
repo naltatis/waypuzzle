@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>animated_result</title>
+	<meta name="generator" content="TextMate http://macromates.com/">
+	<meta name="author" content="Michael">
+	<script src="jquery.js" type="text/javascript" charset="utf-8"></script>
+	
+	<style type="text/css" media="screen">
+		embed {
+			position: absolute;
+			top: -75px;
+			left: -75px;
+			height: 75px;
+			width: 75px;
+			-webkit-transition:all 2.0s ease-in-out;
+		}
+		a {
+			position: absolute;
+			top: 0px;
+			right: 0px;			
+		}
+	</style>
+
+	<script type="text/javascript" charset="utf-8">
+	
+		var length = 75;
+	
+		$(document).ready(function(){
+			$("a").click(function() {
+				update();
+			});
+			update();
+		 });
+		
+		function update() {
+			$.get("result.json", function(content) {
+					console.log(content);
+					animate(eval(content));
+			});
+			window.setTimeout("update()", 5000);
+		}
+		
+		function animate(field) {
+			var degree = ["north","east","south","west"];
+			$("embed").addClass("unused");
+			$.each(field, function(i, line) {
+				$.each(line, function(j, piece) {
+					//console.log(i,j,field["cardname"])
+					if(piece) {
+						var id = piece.cardname.replace(/,/g,"");
+						var $el = $("#"+id);
+						if($el.length == 0) {
+							$el = $('<embed id="'+id+'" src="svg/'+piece.cardname+'.svg">');
+							$("body").append($el);
+						}
+						$el.css("-webkit-transform","translate("+(100+j*length)+"px, "+(100+i*length)+"px) rotate("+degree.indexOf(piece.direction)*90+"deg)");
+						$el.removeClass("unused");
+					}
+				});
+				$("embed.unused").css("-webkit-transform","translate(0px, 0px) rotate(0deg)");
+			});
+
+			//$.each($elements, function(index, element) {
+			//	$(element).css("-webkit-transform","translate("+index*100+"px, "+index*100+"px)");				
+			//});
+		}
+		
+		
+		
+	</script>
+	<!-- Date: 2010-05-31 -->
+</head>
+<body>
+	<a>click me</a>
+</body>
+</html>

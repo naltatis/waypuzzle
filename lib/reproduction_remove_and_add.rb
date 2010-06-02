@@ -5,7 +5,7 @@ class ReproductionRemoveAndAdd
   
   def mutate field
     pending = []
-    @num_removals.times do
+    rand(@num_removals).times do
       pending.push(remove field)
     end
     pending.shuffle.each do |piece|

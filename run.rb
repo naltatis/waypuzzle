@@ -18,7 +18,7 @@ while (line = file.gets)
 end
 file.close
 
-e = Evolution.new(5, 12, 100)
+e = Evolution.new(6, 10, 100)
 e.pieces = pieces
 e.creation = CreationIncremental.new
 e.reproduction = ReproductionRemoveAndAdd.new(24)

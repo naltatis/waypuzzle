@@ -6,6 +6,6 @@ class BenchmarkArea
   
   def benchmark field
     a = field.to_a
-    return a.size*@fac_width + a[0].size*@fac_height
+    return -1*(a.size*@fac_width + a[0].size*@fac_height)
   end
 end

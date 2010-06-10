@@ -18,10 +18,10 @@ while (line = file.gets)
 end
 file.close
 
-e = Evolution.new(6, 10, 100)
+e = Evolution.new(8,6, 100)
 e.pieces = pieces
 e.creation = CreationIncremental.new
-e.reproduction = ReproductionRemoveAndAdd.new(24)
+e.reproduction = ReproductionRemoveAndAdd.new(10)
 e.benchmark = BenchmarkConnections.new
-#e.benchmark = BenchmarkArea.new(1,1)
+e.benchmark = BenchmarkArea.new(1,1)
 best = e.perform

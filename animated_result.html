@@ -12,10 +12,10 @@
 	<style type="text/css" media="screen">
 		embed {
 			position: absolute;
-			top: -75px;
-			left: -75px;
-			height: 75px;
-			width: 75px;
+			top: -120px;
+			left: -120px;
+			height: 120px;
+			width: 120px;
 			-webkit-transition:all 2.0s ease-in-out;
 		}
 		a {
@@ -27,7 +27,7 @@
 
 	<script type="text/javascript" charset="utf-8">
 	
-		var length = 75;
+		var length = 120;
 	
 		$(document).ready(function(){
 			$("a").click(function() {
@@ -57,7 +57,7 @@
 							$el = $('<embed id="'+id+'" src="svg/'+piece.cardname+'.svg">');
 							$("body").append($el);
 						}
-						$el.css("-webkit-transform","translate("+(100+j*length)+"px, "+(100+i*length)+"px) rotate("+degree.indexOf(piece.direction)*90+"deg)");
+						$el.css("-webkit-transform","translate("+(length+length/2+j*length)+"px, "+(length+length/2+i*length)+"px) rotate("+degree.indexOf(piece.direction)*90+"deg)");
 						$el.removeClass("unused");
 					}
 				});

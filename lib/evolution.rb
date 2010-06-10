@@ -17,6 +17,7 @@ class Evolution
       puts "##{generation}"
       print sort(parents)
       puts best(parents)
+      puts best(parents).to_ascii
       h = Html.new
       h.to_html best(parents), "result.html"
       h = Json.new
